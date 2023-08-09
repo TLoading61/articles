@@ -1,9 +1,17 @@
-import { useEffect, useState } from 'react';
+import { createContext, useState } from 'react';
 import './App.css';
 import { ListArticles } from './components/ListArticles';
 import { Details } from './components/Details';
 import { Add } from './components/Add';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+/**
+ * J'intègre le useContext de react pour être capable de transférer des variables ou des fonctions dans les composants
+ * enfant sans faire de props drilling
+ * 
+ * https://dev.to/codeofrelevancy/what-is-prop-drilling-in-react-3kol#:~:text=Prop%20drilling%20occurs%20when%20a,This%20process%20can%20continue%20indefinitely.
+ */
+export const AppContext = createContext();
 
 /**
  * Le coeur de l'application, je gère tout ici 
@@ -13,7 +21,7 @@ function App() {
    * Chaque ligne du tableau contiendra un objet "article"
    */
   const [articles, setArticles] = useState([])
-  
+
   /**
    * La fonction getActualArticle est une fonction dont l'objectif est d'être envoyé en props
    * Lorsqu'elle reçoit un id en paramètres, elle déclenche la fonction updateArticle juste en bas
@@ -23,7 +31,7 @@ function App() {
   const getActualArticle = (id) => {
     updateArticle(id)
   }
-  
+
   /**
    * Cette fonction gère le système de favoris. Dans un premier temps, elle fait une boucle parmis la liste d'articles.
    * Lorsqu'un article à un identifiant identique à l'identifiant en paramètres, c'est qu'on est sur le bon
@@ -32,9 +40,9 @@ function App() {
    */
   const updateArticle = (id) => {
     const updateArticleList = articles.map((article) => {
-      if(article.id === id){
-          /* J'utilise le principe de déconstruction {...article} pour garder mon tableau tout en modifiant le favoris */
-          return {...article, favorite: !article.favorite}
+      if (article.id === id) {
+        /* J'utilise le principe de déconstruction {...article} pour garder mon tableau tout en modifiant le favoris */
+        return { ...article, favorite: !article.favorite }
       } else {
         return article
       }
@@ -69,17 +77,21 @@ function App() {
    * J'y ajoute la liste d'article dans la page de base (avec en props le tableau d'articles et la fonction pour récupérer un article)
    * Le chemin pour afficher un article précis avec le composant lié, là encore avec le tableau d'articles
    * Le chemin pour accéder au composant Add qui permet d'ajouter un article, là aussi avec la fonction getValues pour les récupérer ensuite
+   * 
+   * J'appelle mon AppContext ici pour lui dire que la fonction getActualArticle peut être reçue de partout. ça n'est pas optimisé, mais ça suffit
+   * De cette façon je ne passe plus cette fonction en props, et en props dans le premier élément enfant
    */
   return (
 
-    <Router>
-      <Routes>
-        <Route exact path="/" element={<ListArticles getActualArticle={getActualArticle} articles={articles} />} />
-        <Route path="/articles/:id" element={<Details articles={articles} />} />
-        <Route path="/add" element={<Add getValues={getValues} />} />
-      </Routes>
-    </Router>
-
+    <AppContext.Provider value={{getActualArticle}}>
+      <Router>
+        <Routes>
+          <Route exact path="/" element={<ListArticles articles={articles} />} />
+          <Route path="/articles/:id" element={<Details articles={articles} />} />
+          <Route path="/add" element={<Add getValues={getValues} />} />
+        </Routes>
+      </Router>
+    </AppContext.Provider>
   );
 }
 

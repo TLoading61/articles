@@ -1,6 +1,8 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBellSlash } from '@fortawesome/free-regular-svg-icons'
 import { Link } from 'react-router-dom'
+import { useContext } from "react"
+import { AppContext } from "../App"
 
 /**
  * Ce composant gère une ligne de la liste d'article. Elle affiche l'identifiant et le titre de l'article
@@ -9,12 +11,14 @@ import { Link } from 'react-router-dom'
  * Et me permettre d'avoir l'article que je veux
  * 
  * J'ai également un bouton pour une fonction callback getFavorite, qui récupère l'id de l'article
- * Et l'envoie dans App.js via la fonction getActualArticle envoyée en props. Ce qui va me permettre de 
+ * Et l'envoie dans App.js via la fonction getActualArticle envoyée via le useContext. Ce qui va me permettre de 
  * faire varier la notion de favoris dans le composant parent. 
  */
 export const Article = (props) => {
+    const { getActualArticle } = useContext(AppContext)
+
     const getFavorite = (id) => {
-        props.getActualArticle(id)
+        getActualArticle(id)
     }
 
     return (

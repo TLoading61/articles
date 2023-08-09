@@ -20,13 +20,10 @@ export const ListArticles = (props) => {
                         /**
                          * J'utilise la fonction map pour boucler sur la props envoyée depuis App.js qui est mon tableau d'article
                          * Pour chaque article dedans, je crée un sous-composant Article avec toute mes valeurs
-                         * Attention, j'inclue également la fonction getActualArticle qui était également en props depuis App.js
-                         * Pour qu'elle soit utilisée dans le sous-composant, et alimente la fonction dans App.js, je fais un pont entre
-                         * élément parent et élément enfant d'un enfant
                          */
                         props.articles.map((article, key) => {
                             return (
-                                <Article getActualArticle={props.getActualArticle} key={key} id={article.id} titre={article.titre} favorite={article.favorite}/>
+                                <Article key={key} id={article.id} titre={article.titre} favorite={article.favorite}/>
                             )
                         })
                     }
